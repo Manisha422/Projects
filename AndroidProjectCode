@@ -1,0 +1,109 @@
+MainActivity.java
+package com.example.clipboard_;
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+public class MainActivity extends AppCompatActivity {
+ EditText editText;
+ TextView textView;
+ Button btn_copy, btn_paste;
+ ClipboardManager clipboardManager;
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.activity_main);
+ editText=findViewById(R.id.editText);
+ textView=findViewById(R.id.textView);
+ btn_copy=findViewById(R.id.btn_copy);
+ btn_paste=findViewById(R.id.btn_paste);
+ clipboardManager=(ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+ if(!clipboardManager.hasPrimaryClip()){
+ btn_paste.setEnabled(false);
+ }
+ btn_copy.setOnClickListener(new View.OnClickListener() {
+ @Override
+ public void onClick(View v) {
+ String text= editText.getText().toString();
+ if(!text.equals("")){
+ ClipData clipData=ClipData.newPlainText("text",text);
+ clipboardManager.setPrimaryClip(clipData);
+ Toast.makeText(MainActivity.this, "Copied",Toast.LENGTH_SHORT).show();
+ btn_paste.setEnabled(true);
+ }
+ }
+ });
+ btn_paste.setOnClickListener(new View.OnClickListener() {
+ @Override
+ public void onClick(View v) {
+ ClipData clipData=clipboardManager.getPrimaryClip();
+ ClipData.Item item=clipData.getItemAt(0);
+ textView.setText(item.getText().toString());
+ Toast.makeText(MainActivity.this, "Pasted",Toast.LENGTH_SHORT).show();
+ }
+ });
+ }
+}
+
+XML Code:
+ Activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:app="http://schemas.android.com/apk/res-auto"
+ xmlns:tools="http://schemas.android.com/tools"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ android:gravity="center_horizontal"
+ android:padding="16dp"
+ android:orientation="vertical"
+ tools:context=".MainActivity">
+ <EditText
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:id="@+id/editText"
+ />
+ <Button
+ android:id="@+id/btn_copy"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="Copy" />
+ <Button
+ android:id="@+id/btn_paste"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="Paste"/>
+ 
+<TextView
+ android:id="@+id/textView"
+ android:layout_width="134dp"
+ android:layout_height="40dp"
+ android:text="Text"
+ android:textSize="20sp"/>
+</LinearLayout>
+
+
+
+MANIFEST Code:
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+ package="com.example.clipboard_">
+ <application
+ android:allowBackup="true"
+ android:icon="@mipmap/ic_launcher"
+ android:label="@string/app_name"
+ android:roundIcon="@mipmap/ic_launcher_round"
+ android:supportsRtl="true"
+ android:theme="@style/Theme.CLIPBOARD">
+ <activity android:name=".MainActivity">
+ <intent-filter>
+ <action android:name="android.intent.action.MAIN" />
+ <category android:name="android.intent.category.LAUNCHER" />
+ </intent-filter>
+ </activity>
+ </application>
